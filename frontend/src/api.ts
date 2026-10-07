@@ -61,7 +61,8 @@ export class ApiError extends Error {
   }
 }
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+// Paths below already start with /api, so accept the base URL with or without a trailing "/api".
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/+$/, '').replace(/\/api$/i, '')
 
 let authToken: string | null = null
 let onUnauthorized: (() => void) | null = null
