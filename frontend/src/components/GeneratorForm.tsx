@@ -125,11 +125,11 @@ export default function GeneratorForm({ isGuest, onCreated }: Props) {
 
       <div className="field-row">
         <label className="field">
-          Base URL <span className="muted">(optional)</span>
+          <span>Base URL <span className="muted">(optional)</span></span>
           <input type="url" placeholder="https://api.example.com" value={baseUrl} onChange={(e) => setBaseUrl(e.target.value)} disabled={busy} />
         </label>
         <label className="field">
-          Title <span className="muted">(optional)</span>
+          <span>Title <span className="muted">(optional)</span></span>
           <input maxLength={200} placeholder="Named automatically if empty" value={title} onChange={(e) => setTitle(e.target.value)} disabled={busy} />
         </label>
       </div>
