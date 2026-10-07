@@ -6,6 +6,8 @@ services:
     rootDir: backend
     dockerfilePath: ./Dockerfile
     plan: free
+    # Same region as the Neon database (AWS eu-central-1) so API ↔ DB calls stay fast.
+    region: frankfurt
     healthCheckPath: /api/health
     envVars:
       - key: ConnectionStrings__Default

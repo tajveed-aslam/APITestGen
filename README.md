@@ -167,7 +167,9 @@ All endpoints except `register`, `login`, `guest` and `health` need `Authorizati
 
 ## Deploying (Vercel + Render + Neon)
 
-**1. Database (Neon).** Create a free project and copy its connection string (`postgresql://…`).
+**1. Database (Neon).** Create a free project in **AWS Europe Central 1 (Frankfurt)**, the same region as the
+Render service in `render.yaml`, and copy its connection string (`postgresql://…`). Keep the API and the database in
+the same region; visitors' location matters less, because Vercel serves the frontend from a global CDN.
 
 **2. API (Render).** *New → Blueprint* and select this repo. `render.yaml` sets up a Docker web service from
 `backend/`. Fill in the secret environment variables:
