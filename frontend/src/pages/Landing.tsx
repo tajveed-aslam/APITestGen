@@ -74,7 +74,8 @@ export default function Landing() {
         <section className="hero">
           <p className="eyebrow">AI-assisted API testing</p>
           <h1>
-            Turn an API spec into a <span className="accent">ready-to-run test suite</span>
+            {/* Non-breaking hyphens (U+2011) keep "ready-to-run" on one line. */}
+            Turn an API spec into a <span className="accent">ready‑to‑run test suite</span>
           </h1>
           <p className="lead">
             Paste an OpenAPI spec or a sample API response. Get positive and negative test cases, a Postman collection

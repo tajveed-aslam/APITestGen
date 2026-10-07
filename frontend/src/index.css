@@ -192,6 +192,8 @@ button, input, textarea { font: inherit; color: inherit; }
 .hero-actions { display: flex; gap: 0.75rem; justify-content: center; flex-wrap: wrap; }
 .hint { color: var(--muted); font-size: 0.875rem; margin-top: 1rem; }
 .server-status { font-size: 0.875rem; color: var(--muted); }
+.server-status.ok-text { color: var(--pos); }
+.server-status.error-text { color: var(--danger); }
 
 .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 4rem; }
 .feature { padding: 1.5rem; }
