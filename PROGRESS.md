@@ -3,38 +3,46 @@ _Last updated: 2026-10-07 by Claude Code_
 
 ## Goal
 Web app that turns an OpenAPI/Swagger JSON spec or a sample API response into positive + negative test cases,
-a Postman collection and a pytest module, with per-user saved history.
+a Postman collection and a pytest module, with per-user saved history and a public live demo (guest mode).
 Stack: ASP.NET Core 8 Web API, React + TypeScript (Vite), PostgreSQL via EF Core, JWT auth, Gemini (OpenAI optional).
 
 ## Done
-- Backend (`backend/ApiTestGen.Api`): JWT register/login/me, generations CRUD (`/api/generations`),
-  EF Core model + `InitialCreate` migration, ProblemDetails error handling, Swagger in Development.
-- LLM layer: `ILlmClient` with `GeminiClient` (default) and `OpenAiChatClient`, chosen by `Llm:Provider`.
-  Shared retry with backoff on 429/5xx in `Services/Llm/LlmHttp.cs`.
-- Pipeline (`Services/TestGenerationService.cs`): LLM → structured test cases (validated by `TestCaseParser`) →
-  Postman v2.1 built deterministically (`PostmanCollectionBuilder`) + pytest written by the LLM from the same cases.
-- Tests (`backend/ApiTestGen.Tests`): 32 offline unit tests + 1 live Gemini smoke test (`--filter Category=Live`,
-  needs `GEMINI_API_KEY` env var). All passing.
-- GitHub repo created: https://github.com/tajveed-aslam/APITestGen (remote `origin`).
+- Backend (`backend/ApiTestGen.Api`): JWT register/login/guest/me, generations CRUD (`/api/generations`),
+  EF Core migrations (`InitialCreate`, `AddGuestUsers`), ProblemDetails errors, Swagger, `/api/health`.
+- LLM layer: `ILlmClient` → `GeminiClient` (default) / `OpenAiChatClient`, via `Llm:Provider`; retry/backoff in `LlmHttp`.
+- Pipeline: LLM → structured cases (`TestCaseParser`) → Postman built in C# (`PostmanCollectionBuilder`) + pytest by LLM.
+- Demo guardrails: guest accounts (`POST /api/auth/guest`, 2 h tokens), rate limits in `Infrastructure/RateLimiting.cs`
+  (per-IP guest sessions, per-user generations; guests stricter). Settings under `Demo:*`.
+- Deploy config: `backend/Dockerfile`, `render.yaml` (Render), `frontend/vercel.json` (Vercel SPA rewrites);
+  `ConnectionStrings.NormalizePostgres` accepts `postgresql://` URLs from Neon/Render.
+- Frontend (`frontend/`): landing page with "Try the live demo" + server wake-up indicator, login/register,
+  workspace (generator form with samples, results tabs with copy/download, history sidebar, mobile drawer).
+  `npm run build` and `npm run lint` clean.
+- Tests: 37 offline xUnit tests passing + live Gemini smoke test (`--filter Category=Live`) passing.
+- README with usage, local setup, API reference and deployment steps.
+- Portfolio: APITestGen card added to `tajveed-portfolio/components/Projects.tsx` and committed locally
+  (commit `Add APITestGen to projects`) but **NOT pushed** — `demo: null` until the live URL exists.
 
 ## In progress
-- Frontend (`frontend/`, Vite React-TS) — not started yet.
+- Waiting on the owner for a **Neon** PostgreSQL connection string (they chose Neon over a local install).
 
 ## Next steps
-1. Scaffold `frontend/` (Vite react-ts, react-router-dom), Vite proxy `/api` → `http://localhost:5080`.
-2. Pages: login/register; workspace with generator form (input type toggle, base URL, title, "load sample"),
-   results tabs (Test cases table / Postman / pytest) with copy + download; history sidebar with delete.
-3. README with setup (PostgreSQL, `appsettings.Development.json`), screenshots.
-4. Run end to end — PostgreSQL is NOT installed on the owner's PC yet (no Docker either); ask before installing.
-5. Add APITestGen to `tajveed-portfolio/components/Projects.tsx` (Rule 1), commit + push.
+1. Put the Neon connection string in `backend/ApiTestGen.Api/appsettings.Development.json` (gitignored), run the API
+   (`dotnet run --project ApiTestGen.Api` in `backend/`) + frontend (`npm run dev`), click through end to end:
+   guest demo, register/login, generate from both samples, tabs/copy/download, history open/delete, rate-limit 429.
+2. Deploy: Render (Blueprint from `render.yaml`; env vars `ConnectionStrings__Default`, `Gemini__ApiKey`,
+   `Cors__Origins__0`) then Vercel (root `frontend`, `VITE_API_BASE_URL` = Render URL). Owner does account steps.
+3. Set the live URL in README ("Live demo") and in Projects.tsx `demo:`, take a screenshot for
+   `tajveed-portfolio/public/screenshots/`, then push both repos.
 
 ## Decisions & gotchas
 - Only .NET 10 SDK/runtime installed: projects target `net8.0` with `<RollForward>Major</RollForward>`;
   `dotnet-ef` 8 local tool has `rollForward: true` in `backend/dotnet-tools.json`.
-- Secrets live in `backend/ApiTestGen.Api/appsettings.Development.json` (gitignored; template in
-  `appsettings.Development.example.json`). Never commit it.
-- Gemini model default is `gemini-flash-lite-latest`: on 2026-10-07 `gemini-flash-latest` was overloaded
+- Secrets live only in `backend/ApiTestGen.Api/appsettings.Development.json` (gitignored). Never commit it.
+- Gemini default model is `gemini-flash-lite-latest`: on 2026-10-07 `gemini-flash-latest` was overloaded
   (503s / multi-minute responses) while flash-lite answered in ~4 s. `thinkingBudget: 0` and
   `thinkingLevel: "minimal"` are rejected by the flash model — don't add them.
 - Postman collection is built in code, not by the LLM, so it always imports cleanly and matches the cases.
 - Test cases use `Bearer {{authToken}}` literally; Postman has an `authToken` variable, pytest reads `API_AUTH_TOKEN`.
+- Windows PowerShell 5.1 `Get-Content`/`Set-Content` mangle UTF-8 files (emoji, em dashes) — edit files with the
+  editor tool, not PowerShell string replacement.
