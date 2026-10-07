@@ -20,7 +20,8 @@ export function useServerWake(): ServerState {
         if (!cancelled) setState('ready')
       } catch {
         if (cancelled) return
-        if (attempt >= 8) setState('down')
+        // ~2 minutes in total: a sleeping free-tier instance can take over a minute to boot.
+        if (attempt >= 20) setState('down')
         else window.setTimeout(() => void ping(attempt + 1), 5000)
       }
     }
