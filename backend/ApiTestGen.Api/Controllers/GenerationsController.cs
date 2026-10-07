@@ -7,6 +7,7 @@ using ApiTestGen.Api.Models;
 using ApiTestGen.Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApiTestGen.Api.Controllers;
@@ -21,7 +22,9 @@ public sealed class GenerationsController(AppDbContext db, ITestGenerationServic
     private Guid UserId => Guid.Parse(User.FindFirstValue(JwtRegisteredClaimNames.Sub)!);
 
     [HttpPost]
+    [EnableRateLimiting(RateLimiting.GenerationPolicy)]
     [ProducesResponseType<GenerationDto>(StatusCodes.Status201Created)]
+    [ProducesResponseType<ProblemDetails>(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status400BadRequest)]
     [ProducesResponseType<ProblemDetails>(StatusCodes.Status502BadGateway)]
     public async Task<ActionResult<GenerationDto>> Create(CreateGenerationRequest request, CancellationToken cancellationToken)

@@ -20,9 +20,12 @@ if (Encoding.UTF8.GetByteCount(jwtOptions.Key) < 32)
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
 builder.Services.Configure<OpenAiOptions>(builder.Configuration.GetSection(OpenAiOptions.SectionName));
 builder.Services.Configure<GenerationOptions>(builder.Configuration.GetSection(GenerationOptions.SectionName));
+builder.Services.Configure<DemoOptions>(builder.Configuration.GetSection(DemoOptions.SectionName));
+builder.Services.AddAppRateLimiting(
+    builder.Configuration.GetSection(DemoOptions.SectionName).Get<DemoOptions>() ?? new DemoOptions());
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("Default")));
+    options.UseNpgsql(ConnectionStrings.NormalizePostgres(builder.Configuration.GetConnectionString("Default"))));
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -99,7 +102,10 @@ if (app.Configuration.GetValue<bool>("Database:MigrateOnStartup"))
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+// After authentication so the generation limit can be partitioned by user (and guest vs. registered).
+app.UseRateLimiter();
 app.MapControllers();
+app.MapGet("/api/health", () => Results.Ok(new { status = "ok" }));
 
 app.Run();
 

@@ -11,6 +11,8 @@ public sealed class User
     public Guid Id { get; set; }
     public string Email { get; set; } = "";
     public string PasswordHash { get; set; } = "";
+    /// <summary>Temporary account created by the "Try the live demo" button.</summary>
+    public bool IsGuest { get; set; }
     public DateTime CreatedAt { get; set; }
 
     public List<Generation> Generations { get; set; } = [];

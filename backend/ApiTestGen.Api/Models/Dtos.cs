@@ -21,9 +21,9 @@ public sealed record LoginRequest
     public string Password { get; init; } = "";
 }
 
-public sealed record AuthResponse(string Token, DateTime ExpiresAt, string Email);
+public sealed record AuthResponse(string Token, DateTime ExpiresAt, string Email, bool IsGuest);
 
-public sealed record UserDto(Guid Id, string Email);
+public sealed record UserDto(Guid Id, string Email, bool IsGuest);
 
 public sealed record CreateGenerationRequest
 {

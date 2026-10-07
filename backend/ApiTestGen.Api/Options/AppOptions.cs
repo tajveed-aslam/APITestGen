@@ -39,6 +39,18 @@ public sealed class OpenAiOptions
     public int MaxCompletionTokens { get; set; } = 8000;
 }
 
+public sealed class DemoOptions
+{
+    public const string SectionName = "Demo";
+
+    /// <summary>Allow one-click guest accounts for the public live demo.</summary>
+    public bool GuestAccessEnabled { get; set; } = true;
+    public int GuestTokenMinutes { get; set; } = 120;
+    public int GuestSessionsPerHourPerIp { get; set; } = 5;
+    public int GuestGenerationsPerHour { get; set; } = 5;
+    public int UserGenerationsPerHour { get; set; } = 30;
+}
+
 public sealed class GenerationOptions
 {
     public const string SectionName = "Generation";

@@ -13,23 +13,34 @@ public interface ITokenService
     (string Token, DateTime ExpiresAt) CreateToken(User user);
 }
 
-public sealed class TokenService(IOptions<JwtOptions> options) : ITokenService
+public static class AppClaims
+{
+    /// <summary>Present (value "true") on guest/demo tokens.</summary>
+    public const string Guest = "guest";
+}
+
+public sealed class TokenService(IOptions<JwtOptions> jwtOptions, IOptions<DemoOptions> demoOptions) : ITokenService
 {
     public (string Token, DateTime ExpiresAt) CreateToken(User user)
     {
-        var o = options.Value;
-        var expiresAt = DateTime.UtcNow.AddMinutes(o.ExpiryMinutes);
+        var o = jwtOptions.Value;
+        var lifetime = user.IsGuest ? demoOptions.Value.GuestTokenMinutes : o.ExpiryMinutes;
+        var expiresAt = DateTime.UtcNow.AddMinutes(lifetime);
         var credentials = new SigningCredentials(
             new SymmetricSecurityKey(Encoding.UTF8.GetBytes(o.Key)), SecurityAlgorithms.HmacSha256);
+
+        List<Claim> claims =
+        [
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        ];
+        if (user.IsGuest)
+            claims.Add(new Claim(AppClaims.Guest, "true"));
 
         var token = new JwtSecurityToken(
             issuer: o.Issuer,
             audience: o.Audience,
-            claims:
-            [
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            ],
+            claims: claims,
             expires: expiresAt,
             signingCredentials: credentials);
 
