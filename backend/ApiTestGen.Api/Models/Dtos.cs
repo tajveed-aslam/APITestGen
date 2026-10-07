@@ -8,7 +8,9 @@ public sealed record RegisterRequest
     [Required, EmailAddress, MaxLength(256)]
     public string Email { get; init; } = "";
 
-    [Required, MinLength(8), MaxLength(128)]
+    [Required]
+    [MinLength(8, ErrorMessage = "Password must be at least 8 characters.")]
+    [MaxLength(128, ErrorMessage = "Password must be at most 128 characters.")]
     public string Password { get; init; } = "";
 }
 

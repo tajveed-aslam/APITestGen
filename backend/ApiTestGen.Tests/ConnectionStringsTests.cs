@@ -9,7 +9,7 @@ public class ConnectionStringsTests
     public void Converts_postgres_urls_to_npgsql_format_with_tls()
     {
         var result = ConnectionStrings.NormalizePostgres(
-            "postgresql://app_user:p%40ss@ep-cool-1234.eu-central-1.aws.neon.tech/apitestgen?sslmode=require");
+            "postgresql://app_user:p%40ss@ep-cool-1234.eu-central-1.aws.neon.tech/apitestgen?sslmode=require&channel_binding=require");
 
         var builder = new NpgsqlConnectionStringBuilder(result);
         Assert.Equal("ep-cool-1234.eu-central-1.aws.neon.tech", builder.Host);
@@ -18,6 +18,7 @@ public class ConnectionStringsTests
         Assert.Equal("app_user", builder.Username);
         Assert.Equal("p@ss", builder.Password);
         Assert.Equal(SslMode.Require, builder.SslMode);
+        Assert.Equal(ChannelBinding.Require, builder.ChannelBinding);
     }
 
     [Fact]

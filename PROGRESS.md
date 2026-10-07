@@ -23,13 +23,16 @@ Stack: ASP.NET Core 8 Web API, React + TypeScript (Vite), PostgreSQL via EF Core
 - Portfolio: APITestGen card added to `tajveed-portfolio/components/Projects.tsx` and committed locally
   (commit `Add APITestGen to projects`) but **NOT pushed** — `demo: null` until the live URL exists.
 
+- Neon database (AWS eu-central-1 / Frankfurt) connected via `appsettings.Development.json`; both migrations applied.
+  Scripted API end-to-end run against it: 24/24 checks pass (guest, both input types, history, per-user isolation,
+  validation 400s, 401/404/409, delete, guest-session 429). Dev server + proxy verified.
+
 ## In progress
-- Waiting on the owner for a **Neon** PostgreSQL connection string (they chose Neon over a local install).
+- Owner clicking through the UI locally (http://localhost:5173). No browser tool was available to Claude, so the
+  UI itself hasn't been visually checked by an agent yet.
 
 ## Next steps
-1. Put the Neon connection string in `backend/ApiTestGen.Api/appsettings.Development.json` (gitignored), run the API
-   (`dotnet run --project ApiTestGen.Api` in `backend/`) + frontend (`npm run dev`), click through end to end:
-   guest demo, register/login, generate from both samples, tabs/copy/download, history open/delete, rate-limit 429.
+1. Fix anything the owner finds in the UI.
 2. Deploy: Render (Blueprint from `render.yaml`; env vars `ConnectionStrings__Default`, `Gemini__ApiKey`,
    `Cors__Origins__0`) then Vercel (root `frontend`, `VITE_API_BASE_URL` = Render URL). Owner does account steps.
 3. Set the live URL in README ("Live demo") and in Projects.tsx `demo:`, take a screenshot for

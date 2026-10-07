@@ -39,6 +39,13 @@ public static class ConnectionStrings
             _ => SslMode.Require,
         };
 
+        builder.ChannelBinding = query["channel_binding"]?.ToLowerInvariant() switch
+        {
+            "require" => ChannelBinding.Require,
+            "disable" => ChannelBinding.Disable,
+            _ => ChannelBinding.Prefer,
+        };
+
         return builder.ConnectionString;
     }
 }
