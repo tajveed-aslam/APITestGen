@@ -11,7 +11,11 @@ response from an endpoint, and APITestGen generates:
 
 Every generation is saved to your personal history.
 
-**Live demo:** _coming soon_ · No sign-up needed: click **Try the live demo** for a two-hour guest session.
+**Live demo: https://apitestgen-eight.vercel.app** · No sign-up needed: click **Try the live demo** for a
+two-hour guest session, then **Load sample** and **Generate tests**. The API runs on a free tier that sleeps when
+idle, so the first visit can take up to a minute to wake.
+
+![APITestGen landing page](docs/landing.png)
 
 | | |
 |---|---|
@@ -178,7 +182,7 @@ the same region; visitors' location matters less, because Vercel serves the fron
 |---|---|
 | `ConnectionStrings__Default` | The Neon connection string |
 | `Gemini__ApiKey` | Your Gemini key |
-| `Cors__Origins__0` | Your Vercel URL, e.g. `https://apitestgen.vercel.app` |
+| `Cors__Origins__0` | Your exact Vercel URL, no trailing slash, e.g. `https://apitestgen-eight.vercel.app` |
 
 `Jwt__Key` is generated automatically. Migrations run on startup. Health check: `/api/health`.
 

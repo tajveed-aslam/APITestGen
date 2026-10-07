@@ -27,16 +27,23 @@ Stack: ASP.NET Core 8 Web API, React + TypeScript (Vite), PostgreSQL via EF Core
   Scripted API end-to-end run against it: 24/24 checks pass (guest, both input types, history, per-user isolation,
   validation 400s, 401/404/409, delete, guest-session 429). Dev server + proxy verified.
 
-## In progress
-- Owner clicking through the UI locally (http://localhost:5173). No browser tool was available to Claude, so the
-  UI itself hasn't been visually checked by an agent yet.
+- **Deployed and live (2026-10-07):**
+  - Frontend (Vercel): https://apitestgen-eight.vercel.app (`apitestgen.vercel.app` belongs to someone else).
+  - API (Render, Docker, Frankfurt, free plan): https://apitestgen-api.onrender.com, health at `/api/health`.
+  - Render env: `ConnectionStrings__Default` (Neon), `Gemini__ApiKey`, `Jwt__Key` (generated),
+    `Cors__Origins__0 = https://apitestgen-eight.vercel.app`.
+  - Vercel env: `VITE_API_BASE_URL = https://apitestgen-api.onrender.com/api` (the trailing /api is stripped in `api.ts`).
+  - Verified live: CORS, guest login, real generation (15 cases, ~14 s), history, delete.
+- Portfolio updated and pushed: Projects.tsx card (demo link, screenshot `public/screenshots/apitestgen-landing.png`,
+  note) + a sentence in About.tsx.
+
+## Status
+Project complete. Possible future ideas (not requested): YAML spec support, a screenshot of the results view,
+cleanup job for expired guest accounts, streaming progress instead of the timed messages.
 
 ## Next steps
-1. Fix anything the owner finds in the UI.
-2. Deploy: Render (Blueprint from `render.yaml`; env vars `ConnectionStrings__Default`, `Gemini__ApiKey`,
-   `Cors__Origins__0`) then Vercel (root `frontend`, `VITE_API_BASE_URL` = Render URL). Owner does account steps.
-3. Set the live URL in README ("Live demo") and in Projects.tsx `demo:`, take a screenshot for
-   `tajveed-portfolio/public/screenshots/`, then push both repos.
+- None pending. If the Vercel or Render URL ever changes, update `Cors__Origins__0` on Render, the README and
+  `tajveed-portfolio/components/Projects.tsx`.
 
 ## Decisions & gotchas
 - Only .NET 10 SDK/runtime installed: projects target `net8.0` with `<RollForward>Major</RollForward>`;
